@@ -1,2 +1,2 @@
-# webtrekk-backend-service
-Solution for Webtrekk applicaiton task: Service Development (JWT)
+# backend-service
+Solution for application task: Service Development (JWT)
