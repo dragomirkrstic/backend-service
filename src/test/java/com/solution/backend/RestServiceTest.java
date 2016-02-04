@@ -27,10 +27,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class RestServiceTest {
 
-    private static final String HELLO_JOHN_DOE = "Hello John Doe";
-    private static final String JOHN_DOE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
-    private static final String JOHN_SMITH_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJvdGhlclVzZXIiLCJuYW1lIjoiSm9obiBTbWl0aCIsImFkbWluIjpmYWxzZX0.8mNbBMTEoM0bB1OX06xSx2AYzOznf7IeX2b9BwRpfR8";
-
     private RestServiceImpl restService;
 
     @Mock
@@ -46,9 +42,8 @@ public class RestServiceTest {
 
     @Test
     public void testSuccessfulLogin() {
-        String username = "user", pass = "pass";
-        Mockito.when(backend.login(username, pass)).thenReturn(new BackendResponse(200, null, null));
-        LoginParameters params = makeLoginParameters(username, pass);
+        Mockito.when(backend.login(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD)).thenReturn(new BackendResponse(200, null, null));
+        LoginParameters params = makeLoginParameters(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD);
         Response login = restService.login(params);
         assertEquals(200, login.getStatus());
     }
@@ -62,25 +57,24 @@ public class RestServiceTest {
 
     @Test
     public void testNullUserOrPassword() {
-        Mockito.when(backend.login(null, "asd")).thenThrow(new BadRequestException());
-        Response login = restService.login(makeLoginParameters(null, "asd"));
+        Mockito.when(backend.login(null, Constants.GOOD_PASSWORD)).thenThrow(new BadRequestException());
+        Response login = restService.login(makeLoginParameters(null, Constants.GOOD_PASSWORD));
         assertEquals(400, login.getStatus());
     }
 
     @Test
     public void testSuccessfulHome() {
-        Mockito.when(backend.home(JOHN_DOE_JWT)).thenReturn(new BackendResponse(200, null, new HomeResponse(HELLO_JOHN_DOE)));
-        BackendResponse<HomeResponse> home = backend.home(JOHN_DOE_JWT);
-        assertEquals(HELLO_JOHN_DOE, home.getData().getMessage());
+        Mockito.when(backend.home(Constants.JOHN_DOE_JWT)).thenReturn(new BackendResponse(200, null, new HomeResponse(Constants.HELLO_JOHN_DOE_MESSAGE)));
+        BackendResponse<HomeResponse> home = backend.home(Constants.JOHN_DOE_JWT);
+        assertEquals(Constants.HELLO_JOHN_DOE_MESSAGE, home.getData().getMessage());
     }
 
     @Test
     public void testBadUsernamePassword() {
-        String username = "BadUser", pass = "pass123";
-        Mockito.when(backend.login(username, pass)).thenThrow(new UnauthorizedException());
-        Response login = restService.login(makeLoginParameters(username, pass));
+        Mockito.when(backend.login(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD)).thenThrow(new UnauthorizedException());
+        Response login = restService.login(makeLoginParameters(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD));
         assertEquals(401, login.getStatus());
-        Mockito.verify(backend, Mockito.times(1)).login(username, pass);
+        Mockito.verify(backend, Mockito.times(1)).login(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD);
     }
 
 }

@@ -34,8 +34,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class LoginServiceTest {
 
-    private static final String JOHN_DOE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
-
     @Mock
     private HttpClient httpClient;
 
@@ -51,10 +49,10 @@ public class LoginServiceTest {
 
     @Test
     public void testOkRequest() throws Exception {
-        HttpResponse response = makeHttpResponse(200, JOHN_DOE_JWT);
+        HttpResponse response = makeHttpResponse(200, Constants.JOHN_DOE_JWT);
         Mockito.when(httpClient.execute(Mockito.any(HttpPost.class))).thenReturn(response);
-        LoginResponse login = endpoint.login("GoodUser", "arbitraryElephantConflict");
-        assertEquals(JOHN_DOE_JWT, login.getToken());
+        LoginResponse login = endpoint.login(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD);
+        assertEquals(Constants.JOHN_DOE_JWT, login.getToken());
         Mockito.verify(httpClient, Mockito.times(1)).execute(Mockito.any(HttpPost.class));
     }
 
@@ -62,21 +60,21 @@ public class LoginServiceTest {
     public void testBadRequest() throws IOException {
         HttpResponse response = makeHttpResponse(400, "");
         Mockito.when(httpClient.execute(Mockito.any(HttpPost.class))).thenReturn(response);
-        endpoint.login("BadUser", "pass123");
+        endpoint.login(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD);
     }
 
     @Test(expected = UnauthorizedException.class)
     public void testUnauthorizedRequest() throws IOException {
         HttpResponse response = makeHttpResponse(401, "");
         Mockito.when(httpClient.execute(Mockito.any(HttpPost.class))).thenReturn(response);
-        endpoint.login("BadUser", "pass123");
+        endpoint.login(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD);
     }
 
     @Test(expected = ForbiddenResourceException.class)
     public void testForbiddenRequest() throws IOException {
         HttpResponse response = makeHttpResponse(403, "");
         Mockito.when(httpClient.execute(Mockito.any(HttpPost.class))).thenReturn(response);
-        endpoint.login("BadUser", "pass123");
+        endpoint.login(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD);
     }
 
     private HttpResponse makeHttpResponse(int status, String body) {
