@@ -1,5 +1,7 @@
-package com.solution.backend;
+package com.solution.backend.endpoints.impl;
 
+import com.solution.backend.services.Backend;
+import com.solution.backend.endpoints.BackendEndpoint;
 import com.solution.backend.responses.BackendResponse;
 import com.solution.backend.exceptions.BadRequestException;
 import com.solution.backend.exceptions.ForbiddenResourceException;
@@ -31,7 +33,6 @@ public class RestServiceImpl implements BackendEndpoint {
 
     @Override
     public Response login(LoginParameters parameters) {
-        System.out.println("ASYUDGUYASGDUYASGDUYASGDUYASGDUYSAGD");
         try {
             BackendResponse login = backend.login(parameters.getUsername(), parameters.getPassword());
             return Response.ok(login).build();
@@ -45,9 +46,28 @@ public class RestServiceImpl implements BackendEndpoint {
     @Override
     public Response home() {
         try {
-            String auth = headers.getHeaderString("auth_token");
+            String auth = null;
+            if (headers != null) {
+                auth = headers.getHeaderString("auth_token");
+            }
             BackendResponse home = backend.home(auth);
-            return Response.ok(home.getStatus()).entity(home.getData()).build();
+            return Response.ok(home.getStatus()).entity(home).build();
+        } catch (BadRequestException | UnauthorizedException | ForbiddenResourceException ex) {
+            return Response.status(ex.getStatus()).entity(
+                    new BackendResponse(ex.getStatus(), ex.getMessage(), null))
+                    .build();
+        }
+    }
+
+    @Override
+    public Response logout() {
+        try {
+            String auth = null;
+            if (headers != null) {
+                auth = headers.getHeaderString("auth_token");
+            }
+            backend.logout(auth);
+            return Response.noContent().build();
         } catch (BadRequestException | UnauthorizedException | ForbiddenResourceException ex) {
             return Response.status(ex.getStatus()).entity(
                     new BackendResponse(ex.getStatus(), ex.getMessage(), null))

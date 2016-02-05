@@ -5,12 +5,13 @@
  */
 package com.solution.backend;
 
+import com.solution.backend.services.Backend;
+import com.solution.backend.endpoints.impl.RestServiceImpl;
 import com.solution.backend.exceptions.BadRequestException;
 import com.solution.backend.exceptions.UnauthorizedException;
 import com.solution.backend.params.LoginParameters;
 import com.solution.backend.responses.BackendResponse;
 import com.solution.backend.responses.HomeResponse;
-import com.solution.backend.responses.LoginResponse;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,9 +65,9 @@ public class RestServiceTest {
 
     @Test
     public void testSuccessfulHome() {
-        Mockito.when(backend.home(Constants.JOHN_DOE_JWT)).thenReturn(new BackendResponse(200, null, new HomeResponse(Constants.HELLO_JOHN_DOE_MESSAGE)));
-        BackendResponse<HomeResponse> home = backend.home(Constants.JOHN_DOE_JWT);
-        assertEquals(Constants.HELLO_JOHN_DOE_MESSAGE, home.getData().getMessage());
+        Mockito.when(backend.home(null)).thenReturn(new BackendResponse(200, null, new HomeResponse(Constants.HELLO_JOHN_DOE_MESSAGE)));
+        Response home = restService.home();
+        assertEquals(200, home.getStatus());
     }
 
     @Test
@@ -77,4 +78,10 @@ public class RestServiceTest {
         Mockito.verify(backend, Mockito.times(1)).login(Constants.BAD_USER_NAME, Constants.BAD_USER_PASSWORD);
     }
 
+    @Test
+    public void testLogout() {
+        Mockito.doNothing().when(backend).logout(null);
+        Response logout = restService.logout();
+        assertEquals(204, logout.getStatus());
+    }
 }

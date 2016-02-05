@@ -1,7 +1,6 @@
 package com.solution.backend;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import com.solution.backend.endpoints.impl.RestServiceImpl;
 import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -10,11 +9,13 @@ import javax.ws.rs.core.Application;
  *
  * @author dragomir
  */
-@ApplicationPath("")
+@ApplicationPath("/rest")
 public class BackendApplication extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        return new HashSet<Class<?>>(Arrays.asList(RestServiceImpl.class));
+        Set<Class<?>> resources = new java.util.HashSet<>();
+        resources.add(RestServiceImpl.class);
+        return resources;
     }
 }

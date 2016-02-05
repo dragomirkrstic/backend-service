@@ -1,6 +1,6 @@
-package com.solution.backend.impl;
+package com.solution.backend.endpoints.impl;
 
-import com.solution.backend.LoginService;
+import com.solution.backend.endpoints.LoginService;
 import com.solution.backend.exceptions.BadRequestException;
 import com.solution.backend.exceptions.ForbiddenResourceException;
 import com.solution.backend.exceptions.UnauthorizedException;
@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.ServiceUnavailableException;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import static org.apache.http.HttpStatus.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -22,7 +21,7 @@ import org.apache.http.util.EntityUtils;
 
 public class LoginServiceEndpoint implements LoginService {
 
-    private static final String LOGIN_URI = "http://localhost:8080/login-service/login/jwt";
+    private static final String LOGIN_URI = "http://localhost:8080/login-service/rest/private/login";
 
     private final HttpClient httpClient;
 

@@ -8,7 +8,7 @@ package com.solution.backend;
 import com.solution.backend.exceptions.BadRequestException;
 import com.solution.backend.exceptions.ForbiddenResourceException;
 import com.solution.backend.exceptions.UnauthorizedException;
-import com.solution.backend.impl.LoginServiceEndpoint;
+import com.solution.backend.endpoints.impl.LoginServiceEndpoint;
 import com.solution.backend.responses.LoginResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

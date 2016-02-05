@@ -1,5 +1,7 @@
 package com.solution.backend;
 
+import com.solution.backend.endpoints.LoginService;
+import com.solution.backend.services.Backend;
 import com.solution.backend.exceptions.BadRequestException;
 import com.solution.backend.exceptions.UnauthorizedException;
 import com.solution.backend.responses.BackendResponse;
@@ -7,7 +9,6 @@ import com.solution.backend.responses.LoginResponse;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -34,7 +35,6 @@ public class BackendTest {
     }
 
     @Test
-    @Ignore
     public void testOkLogin() {
         Mockito.when(endpoint.login(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD)).thenReturn(new LoginResponse(Constants.JOHN_DOE_JWT));
         BackendResponse<LoginResponse> login = backend.login(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD);
@@ -54,7 +54,6 @@ public class BackendTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    @Ignore
     public void testBadLogin() {
         Mockito.when(endpoint.login(Constants.NOT_EXIST_USER_NAME, Constants.NOT_EXIST_USER_PASSWORD)).thenThrow(UnauthorizedException.class);
         assertEquals(401, backend.login(Constants.NOT_EXIST_USER_NAME, Constants.NOT_EXIST_USER_PASSWORD).getStatus());
@@ -80,5 +79,13 @@ public class BackendTest {
     public void testHomeNoJwt() {
         BackendResponse home = backend.home(null);
         assertEquals(400, home.getStatus());
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testLogout() {
+        Mockito.when(endpoint.login(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD)).thenReturn(new LoginResponse(Constants.JOHN_DOE_JWT));
+        backend.login(Constants.GOOD_USER_NAME, Constants.GOOD_PASSWORD);
+        backend.logout(Constants.JOHN_DOE_JWT);
+        backend.home(Constants.JOHN_DOE_JWT);
     }
 }

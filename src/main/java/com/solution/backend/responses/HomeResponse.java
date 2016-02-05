@@ -1,10 +1,12 @@
 package com.solution.backend.responses;
 
+import java.io.Serializable;
+
 /**
  *
  * @author dragomir
  */
-public class HomeResponse {
+public class HomeResponse implements Serializable {
 
     private final String message;
 
