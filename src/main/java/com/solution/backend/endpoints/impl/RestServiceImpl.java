@@ -8,6 +8,8 @@ import com.solution.backend.exceptions.ForbiddenResourceException;
 import com.solution.backend.exceptions.InternalServerErrorException;
 import com.solution.backend.exceptions.UnauthorizedException;
 import com.solution.backend.params.LoginParameters;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -36,11 +38,21 @@ public class RestServiceImpl implements BackendEndpoint {
         try {
             BackendResponse login = backend.login(parameters.getUsername(), parameters.getPassword());
             return Response.ok(login).build();
-        } catch (BadRequestException | UnauthorizedException | ForbiddenResourceException | InternalServerErrorException ex) {
+        } catch (BadRequestException | UnauthorizedException | ForbiddenResourceException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
             return Response.status(ex.getStatus()).entity(
                     new BackendResponse(ex.getStatus(), ex.getMessage(), null))
                     .build();
+        } catch (InternalServerErrorException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            return makeInternalErrorResponse(ex);
         }
+    }
+
+    private Response makeInternalErrorResponse(InternalServerErrorException ex) {
+        return Response.status(ex.getStatus()).entity(
+                new BackendResponse(500, "Sorry for the inconvenience", null))
+                .build();
     }
 
     @Override
@@ -53,9 +65,13 @@ public class RestServiceImpl implements BackendEndpoint {
             BackendResponse home = backend.home(auth);
             return Response.ok(home.getStatus()).entity(home).build();
         } catch (BadRequestException | UnauthorizedException | ForbiddenResourceException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
             return Response.status(ex.getStatus()).entity(
                     new BackendResponse(ex.getStatus(), ex.getMessage(), null))
                     .build();
+        } catch (InternalServerErrorException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            return makeInternalErrorResponse(ex);
         }
     }
 
@@ -69,9 +85,13 @@ public class RestServiceImpl implements BackendEndpoint {
             backend.logout(auth);
             return Response.noContent().build();
         } catch (BadRequestException | UnauthorizedException | ForbiddenResourceException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
             return Response.status(ex.getStatus()).entity(
                     new BackendResponse(ex.getStatus(), ex.getMessage(), null))
                     .build();
+        } catch (InternalServerErrorException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            return makeInternalErrorResponse(ex);
         }
     }
 }

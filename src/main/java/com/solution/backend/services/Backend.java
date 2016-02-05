@@ -75,7 +75,7 @@ public class Backend {
         String subject = claims.getSubject();
         String userToken = loggedUsers.get(subject);
         isTokenValidForUser(jwt, userToken);
-        return makeResponse(claims);
+        return makeResponse((String)claims.get("name"));
     }
 
     private void isTokenValidForUser(String jwt, String userToken) throws UnauthorizedException {
@@ -106,13 +106,18 @@ public class Backend {
     }
 
     private Claims parseClaimsFromJwt(String jwt) throws IllegalArgumentException, ExpiredJwtException, MalformedJwtException, SignatureException, UnsupportedJwtException {
-        String key = Base64.getEncoder().encodeToString("secret".getBytes());
-        Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt).getBody();
+        Claims claims;
+        if (Jwts.parser().isSigned(jwt)) {
+            String key = Base64.getEncoder().encodeToString("secret".getBytes());
+            claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt).getBody();
+        } else {
+            claims = (Claims) Jwts.parser().parsePlaintextJwt(jwt);
+        }
         return claims;
     }
 
-    private BackendResponse<HomeResponse> makeResponse(Claims claims) {
-        HomeResponse homeResponse = new HomeResponse("Hello " + claims.get("name"));
+    private BackendResponse<HomeResponse> makeResponse(String name) {
+        HomeResponse homeResponse = new HomeResponse("Hello " + name);
         return new BackendResponse(200, null, homeResponse);
     }
 

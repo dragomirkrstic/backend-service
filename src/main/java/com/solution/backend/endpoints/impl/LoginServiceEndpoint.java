@@ -3,11 +3,16 @@ package com.solution.backend.endpoints.impl;
 import com.solution.backend.endpoints.LoginService;
 import com.solution.backend.exceptions.BadRequestException;
 import com.solution.backend.exceptions.ForbiddenResourceException;
+import com.solution.backend.exceptions.InternalServerErrorException;
 import com.solution.backend.exceptions.UnauthorizedException;
 import com.solution.backend.responses.LoginResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.ServiceUnavailableException;
@@ -21,6 +26,7 @@ import org.apache.http.util.EntityUtils;
 
 public class LoginServiceEndpoint implements LoginService {
 
+    // this should go to properties file
     private static final String LOGIN_URI = "http://localhost:8080/login-service/rest/private/login";
 
     private final HttpClient httpClient;
@@ -48,7 +54,7 @@ public class LoginServiceEndpoint implements LoginService {
         }
     }
 
-    private LoginResponse makeResponse(HttpResponse response, String entity) throws ServiceUnavailableException, BadRequestException, UnauthorizedException {
+    private LoginResponse makeResponse(HttpResponse response, String entity) {
         switch (response.getStatusLine().getStatusCode()) {
             case SC_OK:
                 return new LoginResponse(entity);
@@ -61,8 +67,7 @@ public class LoginServiceEndpoint implements LoginService {
             case SC_SERVICE_UNAVAILABLE:
                 throw new ServiceUnavailableException();
             default:
-                throw new BadRequestException();
-
+                throw new InternalServerErrorException();
         }
     }
 
